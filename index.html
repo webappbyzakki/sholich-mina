@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Achmad & Siti Aminah Wedding</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="cover" class="cover">
+<div class="card">
+<div>بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+<p>Kepada Yth.</p>
+<h2 id="guest">Tamu Undangan</h2>
+<hr>
+<h1>Achmad</h1>
+<div class="gold">&</div>
+<h1>Siti Aminah</h1>
+<p>Ahad Pon • 13 September 2026</p>
+<button onclick="openInvitation()">Buka Undangan</button>
+</div>
+</div>
+
+<main id="main" class="hidden">
+<section class="hero">
+<h3>Luxury Islamic Wedding Invitation</h3>
+<h1>Achmad Sholich Mubarok<br>&<br>Siti Aminah Nurul Ummah</h1>
+<div id="countdown"></div>
+</section>
+
+<section>
+<h2>Mempelai</h2>
+<div class="grid">
+<div class="card">
+<h3>Achmad Sholich Mubarok</h3>
+<p>Putra Bapak K. Saifullah Mathori<br>Ibu Nyai Nasikhah Isa Muftie</p>
+</div>
+<div class="card">
+<h3>Siti Aminah Nurul Ummah</h3>
+<p>Putri Bapak K. Subhan Masyhuri<br>Ibu Nyai Zahrotul Mukhoyyaroh</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>Acara</h2>
+<div class="card">
+Ahad Pon, 13 September 2026<br>
+08.00 WIB - Selesai<br>
+Masjid Baitul Hamid Mojowetan Blora
+<br><br>
+<a href="https://maps.google.com/?q=Masjid+Baitul+Hamid+Blora">Google Maps</a>
+</div>
+</section>
+
+<section>
+<h2>Gallery</h2>
+<div class="gallery">
+<img src="assets/images/gallery/photo1.jpg">
+<img src="assets/images/gallery/photo2.jpg">
+<img src="assets/images/gallery/photo3.jpg">
+</div>
+</section>
+
+<section>
+<h2>RSVP & Ucapan</h2>
+<form id="rsvp">
+<input id="nama" placeholder="Nama" required>
+<select id="hadir">
+<option>Hadir</option>
+<option>Tidak Hadir</option>
+<option>Masih Ragu</option>
+</select>
+<input id="jumlah" type="number" value="1">
+<textarea id="ucapan" placeholder="Doa dan ucapan"></textarea>
+<button>Kirim</button>
+</form>
+<div id="wishes"></div>
+</section>
+</main>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
