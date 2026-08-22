@@ -1,0 +1,9 @@
+<h1>Generator Link Tamu</h1>
+<textarea id="list" placeholder="Nama tamu per baris"></textarea>
+<button onclick="generate()">Generate</button>
+<pre id="result"></pre>
+<script>
+function generate(){
+result.textContent=list.value.split('\n').filter(Boolean).map(n=>location.origin+'/?to='+n.replaceAll(' ','-')).join('\n')
+}
+</script>

@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "rsvp": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
