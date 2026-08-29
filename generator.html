@@ -1,9 +1,345 @@
-<h1>Generator Link Tamu</h1>
-<textarea id="list" placeholder="Nama tamu per baris"></textarea>
-<button onclick="generate()">Generate</button>
-<pre id="result"></pre>
-<script>
-function generate(){
-result.textContent=list.value.split('\n').filter(Boolean).map(n=>location.origin+'/?to='+n.replaceAll(' ','-')).join('\n')
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#765346">
+  <title>Generator Permalink Undangan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f1ec;
+      --paper: rgba(255,255,255,.72);
+      --text: #33251f;
+      --muted: #76645d;
+      --accent: #a77b68;
+      --accent-dark: #765346;
+      --line: rgba(118,83,70,.16);
+      --success: #52614e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 36px 16px;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 5%, rgba(255,255,255,.95), transparent 34%),
+        linear-gradient(145deg, #fbf8f5, var(--bg), #eadbd0);
+      font-family: Montserrat, Arial, sans-serif;
+    }
+    .shell { width: min(960px, 100%); margin: 0 auto; }
+    .panel {
+      padding: clamp(24px, 5vw, 46px);
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 30px;
+      background: var(--paper);
+      box-shadow: 0 24px 70px rgba(75,51,40,.13);
+      backdrop-filter: blur(20px);
+    }
+    h1, h2 { font-family: "Cormorant Garamond", Georgia, serif; }
+    h1 { margin: 0; font-size: clamp(2.3rem, 7vw, 4.5rem); line-height: .95; }
+    .lead { color: var(--muted); line-height: 1.7; }
+    label { display: block; margin: 22px 0 8px; font-weight: 700; font-size: .86rem; }
+    input, textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      outline: none;
+      background: rgba(255,255,255,.78);
+      color: var(--text);
+      font: inherit;
+    }
+    textarea { min-height: 145px; resize: vertical; }
+    input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(167,123,104,.12); }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    button, .button-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 11px 18px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      font: 700 .84rem Montserrat, sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    button.secondary, .button-link.secondary { color: var(--accent-dark); background: rgba(255,255,255,.72); border: 1px solid var(--line); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .result-list { display: grid; gap: 12px; margin-top: 26px; }
+    .result-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.66);
+    }
+    .result-card strong { display: block; margin-bottom: 8px; }
+    .url {
+      display: block;
+      overflow-wrap: anywhere;
+      color: var(--accent-dark);
+      font-size: .78rem;
+      line-height: 1.6;
+    }
+    .mini-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .mini-actions button, .mini-actions a { min-height: 38px; padding: 8px 13px; font-size: .73rem; }
+    .status { margin-top: 15px; color: var(--success); font-weight: 700; font-size: .8rem; }
+    .note { margin-top: 26px; padding: 15px; border-radius: 16px; background: rgba(167,123,104,.09); color: var(--muted); font-size: .8rem; line-height: 1.65; }
+    code { color: var(--accent-dark); }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="panel">
+      <p style="margin:0 0 10px;color:#765346;font-size:.74rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase">Undangan Zakki &amp; Niha</p>
+      <h1>Generator Permalink Tamu</h1>
+      <p class="lead">Masukkan satu atau beberapa nama. Untuk banyak tamu, tulis satu nama pada setiap baris. Link dibuat dengan parameter <code>?to=</code> dan nama akan tampil otomatis pada cover serta kolom RSVP.</p>
+
+      <label for="baseUrl">Alamat utama undangan</label>
+      <input id="baseUrl" type="url" autocomplete="url">
+
+      <label for="guestNames">Nama tamu</label>
+      <textarea id="guestNames" placeholder="Bapak Ahmad dan Keluarga&#10;Ibu Siti Nurhaliza&#10;Saudara Andi &amp; Rina"></textarea>
+
+      <div class="actions">
+        <button id="generate" type="button">Buat Permalink</button>
+        <button id="copyAll" class="secondary" type="button" disabled>Salin Semua</button>
+        <button id="downloadCsv" class="secondary" type="button" disabled>Unduh CSV</button>
+        <a class="button-link secondary" href="./">Buka Undangan</a>
+      </div>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <div id="results" class="result-list"></div>
+
+      <div class="note">
+        Contoh hasil: <code>https://username.github.io/nama-repository/?to=Bapak+Ahmad+dan+Keluarga</code>. Parameter alternatif <code>?nama=</code> dan <code>?guest=</code> juga didukung oleh halaman undangan, tetapi generator selalu memakai <code>?to=</code> agar konsisten.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const baseUrlInput = document.getElementById("baseUrl");
+    const guestNamesInput = document.getElementById("guestNames");
+    const results = document.getElementById("results");
+    const status = document.getElementById("status");
+    const copyAllButton = document.getElementById("copyAll");
+    const downloadCsvButton = document.getElementById("downloadCsv");
+    let generatedItems = [];
+
+    function getDefaultBaseUrl() {
+      const url = new URL("./", window.location.href);
+      url.search = "";
+      url.hash = "";
+      return url.toString();
+    }
+
+    function sanitizeName(value) {
+      return String(value || "")
+        .replace(/[<>`]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 100);
+    }
+
+    function buildLink(baseUrl, guestName) {
+      const url = new URL(baseUrl);
+      url.search = "";
+      url.hash = "";
+      url.searchParams.set("to", guestName);
+      return url.toString();
+    }
+
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.style.position = "fixed";
+      area.style.left = "-9999px";
+      document.body.appendChild(area);
+      area.focus();
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      if (!ok) throw new Error("Copy failed");
+    }
+
+    function render() {
+      results.innerHTML = "";
+      generatedItems.forEach((item, index) => {
+        const card = document.createElement("article");
+        card.className = "result-card";
+
+        const name = document.createElement("strong");
+        name.textContent = item.name;
+
+        const link = document.createElement("a");
+        link.className = "url";
+        link.href = item.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = item.url;
+
+        const actions = document.createElement("div");
+        actions.className = "mini-actions";
+
+        const copy = document.createElement("button");
+        copy.type = "button";
+        copy.textContent = "Salin Link";
+        copy.addEventListener("click", async () => {
+          try {
+            await copyText(item.url);
+            status.textContent = `Link ${item.name} berhasil disalin.`;
+          } catch {
+            window.prompt("Salin link berikut:", item.url);
+          }
+        });
+
+        const open = document.createElement("a");
+open.className = "button-link secondary";
+open.href = item.url;
+open.target = "_blank";
+open.rel = "noopener noreferrer";
+open.textContent = "Tes Link";
+
+const coupleName = "Zakki & Niha";
+
+const whatsappMessage = `Assalamualaikum Wr. Wb.
+
+Kepada Yth.
+${item.name}
+
+Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk berkenan hadir serta memberikan doa dan restu pada acara pernikahan kami.
+
+Untuk informasi lengkap mengenai waktu, tempat, dan rangkaian acara, silakan mengakses undangan melalui tautan berikut:
+${item.url}
+
+Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i dapat berkenan hadir.
+
+Wassalamualaikum Wr. Wb.
+
+Yang berbahagia,
+${coupleName}`;
+
+const encodedMessage = encodeURIComponent(whatsappMessage);
+
+const whatsappFallback =
+  `https://wa.me/?text=${encodedMessage}`;
+
+const encodedFallback =
+  encodeURIComponent(whatsappFallback);
+
+const whatsappPersonal = document.createElement("a");
+whatsappPersonal.className = "button-link secondary";
+whatsappPersonal.href =
+  `intent://send?text=${encodedMessage}` +
+  `#Intent;` +
+  `scheme=whatsapp;` +
+  `package=com.whatsapp;` +
+  `S.browser_fallback_url=${encodedFallback};` +
+  `end`;
+whatsappPersonal.target = "_blank";
+whatsappPersonal.rel = "noopener noreferrer";
+whatsappPersonal.textContent = "WA Biasa";
+
+const whatsappBusiness = document.createElement("a");
+whatsappBusiness.className = "button-link secondary";
+whatsappBusiness.href =
+  `intent://send?text=${encodedMessage}` +
+  `#Intent;` +
+  `scheme=whatsapp;` +
+  `package=com.whatsapp.w4b;` +
+  `S.browser_fallback_url=${encodedFallback};` +
+  `end`;
+whatsappBusiness.target = "_blank";
+whatsappBusiness.rel = "noopener noreferrer";
+whatsappBusiness.textContent = "WA Bisnis";
+
+/* Fallback untuk iPhone, komputer, dan browser non-Android */
+const isAndroid = /Android/i.test(navigator.userAgent);
+
+if (!isAndroid) {
+  whatsappPersonal.href = whatsappFallback;
+  whatsappBusiness.href = whatsappFallback;
 }
-</script>
+
+actions.append(
+  copy,
+  open,
+  whatsappPersonal,
+  whatsappBusiness
+);
+
+card.append(name, link, actions);
+results.appendChild(card);
+      });
+    }
+
+    document.getElementById("generate").addEventListener("click", () => {
+      let baseUrl;
+      try {
+        baseUrl = new URL(baseUrlInput.value.trim()).toString();
+      } catch {
+        status.textContent = "Alamat utama undangan tidak valid.";
+        return;
+      }
+
+      const names = [...new Set(
+        guestNamesInput.value
+          .split(/\r?\n/)
+          .map(sanitizeName)
+          .filter(Boolean)
+      )];
+
+      if (!names.length) {
+        status.textContent = "Masukkan minimal satu nama tamu.";
+        return;
+      }
+
+      generatedItems = names.map((name) => ({ name, url: buildLink(baseUrl, name) }));
+      copyAllButton.disabled = false;
+      downloadCsvButton.disabled = false;
+      status.textContent = `${generatedItems.length} permalink berhasil dibuat.`;
+      render();
+    });
+
+    copyAllButton.addEventListener("click", async () => {
+      const text = generatedItems.map((item) => `${item.name}\t${item.url}`).join("\n");
+      try {
+        await copyText(text);
+        status.textContent = "Semua permalink berhasil disalin.";
+      } catch {
+        window.prompt("Salin semua permalink berikut:", text);
+      }
+    });
+
+    downloadCsvButton.addEventListener("click", () => {
+      const escapeCsv = (value) => `"${String(value).replace(/"/g, '""')}"`;
+      const csv = [
+        "Nama Tamu,Permalink",
+        ...generatedItems.map((item) => `${escapeCsv(item.name)},${escapeCsv(item.url)}`)
+      ].join("\r\n");
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "permalink-tamu-zakki-niha.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    baseUrlInput.value = getDefaultBaseUrl();
+  </script>
+</body>
+</html>
