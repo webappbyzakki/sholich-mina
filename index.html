@@ -261,6 +261,22 @@
             user-select: none;
             -webkit-user-drag: none;
         }
+        /* Elegant Scroll Indicator */
+.scroll-indicator {
+    animation: scrollDown 1.8s ease-in-out infinite;
+}
+
+@keyframes scrollDown {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translateY(7px);
+        opacity: 1;
+    }
+}
     </style>
 </head>
 
@@ -470,6 +486,16 @@
                 <p class="font-serif text-base sm:text-xl text-gray-300">
                     Ahad, 13 September 2026
                 </p>
+                <!-- Scroll Indicator -->
+<a
+    href="#quote"
+    class="mt-8 inline-flex flex-col items-center text-white/70 hover:text-white transition-all duration-300 scroll-indicator"
+    aria-label="Scroll ke bawah"
+>
+    <span class="w-px h-10 bg-white/60"></span>
+
+    <i class="fa-solid fa-chevron-down text-xs -mt-1"></i>
+</a>
 
             </div>
 
